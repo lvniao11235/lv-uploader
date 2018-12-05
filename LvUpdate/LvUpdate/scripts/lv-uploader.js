@@ -15,6 +15,8 @@
             block: 1024 * 1024,
             start: 0,
             file: null,
+            size: 0,
+            count: 0,
             guid: null,
             progressValue: 0,
             progress: function (value) { },
@@ -41,7 +43,11 @@
             self.target.append(self.format('<button id="{0}">upload</button>', self.option.ctlBtnId));
             $("#" + self.option.ctlBtnId).click(function () {
                 self.option.file = $("#" + self.option.ctlFileId)[0].files[0];
-                self.start();
+                self.option.size = self.option.file.size;
+                self.option.count = 1;
+                self.option.start = 0,
+                self.option.progressValue = 0;
+                self.upload();
             });
         },
         format: function () {
@@ -79,14 +85,15 @@
                 dataType: 'json',
                 data: { end: true }
             }).done(function (data) {
-                self.option.guid = data.guid;
-                self.upload();
             });
         },
         upload: function () {
             var self = this;
             if (self.option.start * self.option.block > self.option.file.size) {
                 self.end();
+                self.option.progressValue = 100;
+                console.log(self.option.progressValue);
+                return;
             }
             var end = Math.min((self.option.start + 1) * self.option.block, self.option.file.size);
             var filedata = self.option.file.slice(self.option.start * self.option.block, end);
@@ -102,6 +109,20 @@
                 contentType: false,
                 dataType: "json"
             }).done(function (data) {
+                if (((self.option.count * self.option.block * 100) / self.option.size) > 1) {
+                    if (self.option.progressValue < 100 -
+                        (parseInt((self.option.count * self.option.block * 100) / self.option.size)+1)) {
+                        self.option.progressValue += 
+                            parseInt((self.option.count * self.option.block * 100) / self.option.size) + 1;
+                        self.option.count = 1;
+                    } else {
+                        self.option.progressValue = 99;
+                    }
+                    
+                    console.log(self.option.progressValue);
+                } else {
+                    self.option.count++;
+                }
                 self.option.start++;
                 self.upload();
             });
