@@ -109,20 +109,12 @@
                 contentType: false,
                 dataType: "json"
             }).done(function (data) {
-                if (((self.option.count * self.option.block * 100) / self.option.size) > 1) {
-                    if (self.option.progressValue < 100 -
-                        (parseInt((self.option.count * self.option.block * 100) / self.option.size)+1)) {
-                        self.option.progressValue += 
-                            parseInt((self.option.count * self.option.block * 100) / self.option.size) + 1;
-                        self.option.count = 1;
-                    } else {
-                        self.option.progressValue = 99;
-                    }
-                    
-                    console.log(self.option.progressValue);
-                } else {
-                    self.option.count++;
+                self.option.progressValue =
+                    parseInt((100 * self.option.start * self.option.block) / self.option.size);
+                if (self.option.progressValue > 100) {
+                    self.option.progressValue = 99;
                 }
+                console.log(self.option.progressValue);
                 self.option.start++;
                 self.upload();
             });
