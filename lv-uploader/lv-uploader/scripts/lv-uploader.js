@@ -12,7 +12,7 @@
         var id = window.uploadercurrentid();
         var argument = {
             url: '',
-            block: 1024 * 1024,
+            block: 3*1024 * 1024,
             start: 0,
             file: null,
             size: 0,
